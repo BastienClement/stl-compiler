@@ -1456,6 +1456,8 @@ function operationType(op, a, b, _) {
 "`"(.|\n|\r)*?"`"                             return 'LIST_EXPRESSION';
 "#".*                                         return 'LIST_COMMENT';
 
+"\""[^"]*"\""                                 return 'STRING_CONSTANT';
+
 ([0-9][0-9_]*)?\.[0-9_]+\b                    return 'REAL_CONSTANT';
 [0-9][0-9_]*\b                                return 'DEC_CONSTANT';
 0[xX][0-9A-Fa-f_]+?\b                         return 'HEX_CONSTANT';
@@ -2232,6 +2234,8 @@ constant_expression
 		{ $$ = { $: "value", type: "real", value: ($1.replace(/_/g, "")) * 1 }; }
 	| boolean_literal
 		{ $$ = { $: "value", type: "boolean", value: $1 }; }
+	| STRING_CONSTANT
+		{ $$ = { $: "value", type: "string", value: $1.slice(1, -1) }; }
 	;
 	
 constant_integer
