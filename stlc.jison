@@ -912,8 +912,8 @@ var builtins = (function() {
 				error("Invalid delay duration: " + args[2].value, _);
 			validate_timer(args[1], _);
 				
-			push(compileExpr(dynCast(args[0], "bit", _), _));
 			push("L " + args[2].value);
+			push(compileExpr(dynCast(args[0], "bit", _), _));
 			push(op + " T " + args[1].value);
 			push("A T " + args[1].value);
 		}];
@@ -933,7 +933,7 @@ var builtins = (function() {
 		"$ATAN": math_op("ATAN"),
 		"$ONDELAY": delay_op("SD"),
 		"$OFFDELAY": delay_op("SF"),
-		"$PULSEDELAY": delay_op("SP"),
+		"$PULSEDELAY": delay_op("SE"),
 		"$CLRDELAY": ["void", function(push, args, _) {
 			validate_timer(args[0], _);
 			push("FR T " + args[0].value);
