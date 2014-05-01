@@ -898,7 +898,25 @@ var builtins = (function() {
 		return ["real", function(push, args, _) {
 			push(compileExpr(dynCast(args[0], "real", _), _));
 			push(op);
-		}]
+		}];
+	}
+	
+	function validate_timer(timer, _) {
+		if(timer.type != "integer" || timer.value < 1 || timer.value > 9)
+			error("Invalid delay register: " + timer.value, _);
+	}
+	
+	function delay_op(op) {
+		return ["bit", function(push, args, _) {
+			if(args[2].type != "string" || !args[2].value.match(/^S5T#.*$/))
+				error("Invalid delay duration: " + args[2].value, _);
+			validate_timer(args[1], _);
+				
+			push(compileExpr(dynCast(args[0], "bit", _), _));
+			push("L " + args[2].value);
+			push(op + " T " + args[1].value);
+			push("A T " + args[1].value);
+		}];
 	}
 
 	return {
@@ -912,7 +930,22 @@ var builtins = (function() {
 		"$TAN": math_op("TAN"),
 		"$ASIN": math_op("ASIN"),
 		"$ACOS": math_op("ACOS"),
-		"$ATAN": math_op("ATAN")
+		"$ATAN": math_op("ATAN"),
+		"$ONDELAY": delay_op("SD"),
+		"$OFFDELAY": delay_op("SF"),
+		"$PULSEDELAY": delay_op("SP"),
+		"$CLRDELAY": ["void", function(push, args, _) {
+			validate_timer(args[0], _);
+			push("FR T " + args[0].value);
+		}],
+		"$GETDELAY": ["bit", function(push, args, _) {
+			validate_timer(args[0], _);
+			push("A T " + args[0].value);
+		}],
+		"$READDELAY": ["int", function(push, args, _) {
+			validate_timer(args[0], _);
+			push("L T " + args[0].value);
+		}]
 	};
 })();
 
